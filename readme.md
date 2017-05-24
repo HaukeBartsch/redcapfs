@@ -31,4 +31,50 @@ Afterwards run the program again:
    - Initially run: /Library/Filesystems/osxfuse.fs/Contents/Resources/load_osxfuse (restart might work as well)
    - to un-mount a directory use umount <directory>
 
+### Example Session
 
+Initially create a link to your REDCap database. This is done in REDCap using tokens that depend on both the user account and the project. Only with such a token the interface will be able to connect to the database. Tokens are stored by the application in a local file (encrypted). Every time you start the program you will be asked for a password to that store.
+
+```
+> ./redcapfs --help
+Usage of ./redcapfs:
+  -addToken string
+    	add a <REDCap token>
+  -clearAllToken
+    	remove stored token
+  -debug
+    	print debugging messages.
+  -setREDCapURL string
+    	set the REDCap URL (default "https://abcd-rc.ucsd.edu/redcap/api/")
+  -showToken
+    	show existing token
+>
+>
+> /Library/Filesystems/osxfuse.fs/Contents/Resources/load_osxfuse
+> ./redcapfs /tmp/EDC
+This is a secured access. Provide your pass phrase: 
+Mounted!
+```
+There will be two files in the created directory connection to the database.
+
+```
+> ls
+DataDictionary.json	EventMapping.json
+```
+
+The EventMapping.json file contains the names of forms used in the study. Now we can create a new file in our directory with the name of the form in question:
+
+```
+> touch screener.csv
+```
+
+It depends on the speed of your connection to the EDC but after a couple of seconds the new file will fill with the data for that instrument. There will also be a second file that contains the data dictionory for that form.
+
+```
+> ls -l
+total 17656
+-rw-r--r--  1 hauke  staff  8569835 May 24 13:58 DataDictionary.json
+-rw-r--r--  1 hauke  staff    20978 May 24 13:58 EventMapping.json
+-rw-r--r--  1 hauke  staff   367411 May 24 14:03 screener.csv
+-rw-r--r--  1 hauke  staff    72963 May 24 14:03 screener_datadictionary.csv
+```
