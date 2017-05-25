@@ -14,7 +14,7 @@ encrypted in the current directory. Running this program again will ask for a pa
 
 ### Example Session
 
-Initially create a link to your REDCap database. This is done in REDCap using tokens that depend on both the user account and the project. Only with such a token the interface will be able to connect to the database. Tokens are stored by the application in a local file (encrypted). Every time you start the program you will be asked for a password to that store. After you add your tokens you can start the application again with a mount point (here /tmp/EDC). The data in this directory will disappear if you close the application.
+Start by allowing your REDCap user account access to the REDCap API functions. Each REDap account with this type of access will have a secret token string that is specific to both the user account and the project. This application will store the token in a local encrypted file. Every time you start the program you will be asked for a password. With a valid token you can start the application. Provide a new directory name as a mount point (here /tmp/EDC). The application will watch for file system events like the creation of a file in this directory. The directory and all the files inside will disappear if you close the application.
 
 ```
 > ./redcapfs --help
@@ -30,13 +30,12 @@ Usage of ./redcapfs:
   -showToken
     	show existing token
 >
->
 > /Library/Filesystems/osxfuse.fs/Contents/Resources/load_osxfuse
 > ./redcapfs /tmp/EDC
 This is a secured access. Provide your pass phrase: 
 Mounted!
 ```
-There will be two files in the created directory that contain basic information about the project you are connected to. One file represents the REDCap data dictionary the other the mapping of instruments to events or visits.
+After starting the application there will be two files in the created directory with basic information about the REDCap project. One file contains the REDCap data dictionary with all instruments and measures the other file contains the mapping of instruments to events or visits.
 
 ```
 > cd /tmp/EDC/
@@ -44,13 +43,13 @@ There will be two files in the created directory that contain basic information 
 DataDictionary.json	EventMapping.json
 ```
 
-The EventMapping.json file contains the names of forms used in the study. Create a new file in our directory with the name of the screener instrument:
+The EventMapping.json file contains the names of instruments that exist in the project. Create a new file in our directory with the name of the screener instrument:
 
 ```
 > touch screener.csv
 ```
 
-It depends on the speed of your connection to the EDC but after a couple of seconds the new file will fill with the data for that instrument. There will also be a second file that contains the data dictionary for the screener.
+Based on the speed of your network connection after a couple of seconds the new file you created will be filled by the application with the data for that instrument. The application will also create a second file with the data dictionary entries for this instrument.
 
 ```
 > ls -l
@@ -61,9 +60,9 @@ total 17656
 -rw-r--r--  1 hauke  staff    72963 May 24 14:03 screener_datadictionary.csv
 ```
 
-The currently supported file format for export are comma separated values, Excel files and JSON encoded files. The application guesses the type of the exported file by the file extension.
+Currently supported file formats for export are comma separated values (.csv), Excel files (.xlsx) and JSON encoded files (.json). The application guesses the type of the requested file by the file extension you use when you create the file.
 
-Further trivial extensions include directories that limit/filter the exported data. Creating a directory with the name of a specific month/year would export data collected up to that point in time. Directories can also represent collections of instruments that belong to a specific work-group. Creating such a directory exports all instruments that belong to the group in the default file format.
+Further trivial extensions include directories that limit/filter the exported data. Creating a directory with the name of a specific month/year exports data collected up to that point. Directories can also represent collections of instruments that belong to a specific workgroup. Creating such a directory exports all instruments that belong to the group in the default file format.
 
 ### Build
 
